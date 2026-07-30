@@ -6,11 +6,8 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * This is an API-only app with no web login/redirect routes, so every
- * request under the api group must be treated as JSON-expecting even
- * when a client omits the Accept header (plain curl, some HTTP libs).
- */
+// curl and some HTTP clients don't send Accept: application/json, so without this
+// Laravel tries to redirect on auth/validation errors instead of returning JSON
 class ForceJsonResponse
 {
     public function handle(Request $request, Closure $next): Response

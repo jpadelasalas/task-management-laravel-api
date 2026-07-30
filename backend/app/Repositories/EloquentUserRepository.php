@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 
 class EloquentUserRepository extends BaseRepository implements UserRepositoryInterface
@@ -38,5 +39,14 @@ class EloquentUserRepository extends BaseRepository implements UserRepositoryInt
         $user->update($attributes);
 
         return $user;
+    }
+
+    public function paginateWithFilters(array $filters, int $perPage = 15): LengthAwarePaginator
+    {
+        return $this->model
+            ->when($filters['role'] ?? null, fn ($q, $role) => $q->where('role', $role))
+            ->when(array_key_exists('is_active', $filters) && $filters['is_active'] !== null, fn ($q) => $q->where('is_active', $filters['is_active']))
+            ->latest()
+            ->paginate($perPage);
     }
 }

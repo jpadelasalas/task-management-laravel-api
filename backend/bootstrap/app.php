@@ -20,7 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\ForceJsonResponse::class,
         ]);
 
-        // API-only app: no web "login" route exists to redirect guests to.
+        // no login route to redirect to, this is API only
         $middleware->redirectGuestsTo(fn () => null);
     })
     ->withExceptions(function (Exceptions $exceptions) {
