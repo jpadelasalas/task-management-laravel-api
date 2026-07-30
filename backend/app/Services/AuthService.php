@@ -23,8 +23,7 @@ class AuthService
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => $data['password'],
-            // Public registration can never self-assign a privileged role —
-            // elevation only happens through the admin/manager user-management endpoints.
+            // don't trust a role from self-registration, always start as team_member
             'role' => UserRole::TeamMember,
             'is_active' => true,
         ]);

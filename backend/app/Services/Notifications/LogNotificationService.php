@@ -6,11 +6,8 @@ use App\Enums\TaskStatus;
 use App\Models\Task;
 use Illuminate\Support\Facades\Log;
 
-/**
- * Placeholder until the Node notification service exists. Swap the binding
- * in AppServiceProvider for an HttpNotificationService when it's ready —
- * callers depend on the NotificationService interface, not this class.
- */
+// stub till the Node service exists, swap the binding in AppServiceProvider for
+// an HttpNotificationService later, nothing else has to change
 class LogNotificationService implements NotificationService
 {
     public function taskAssigned(Task $task): void
