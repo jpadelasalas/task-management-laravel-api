@@ -7,6 +7,8 @@ import TasksList from '../features/tasks/pages/TasksList'
 import TaskDetail from '../features/tasks/pages/TaskDetail'
 import Teams from '../features/teams/pages/Teams'
 import TeamDetail from '../features/teams/pages/TeamDetail'
+import Users from '../features/users/pages/Users'
+import UserDetail from '../features/users/pages/UserDetail'
 
 const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
@@ -24,6 +26,13 @@ const router = createBrowserRouter([
             children: [
               { path: '/teams', element: <Teams /> },
               { path: '/teams/:id', element: <TeamDetail /> },
+            ],
+          },
+          {
+            element: <ProtectedRoute roles={['admin']} />,
+            children: [
+              { path: '/users', element: <Users /> },
+              { path: '/users/:id', element: <UserDetail /> },
             ],
           },
         ],
