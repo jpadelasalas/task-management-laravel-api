@@ -70,4 +70,9 @@ class TaskPolicy
 
         return $task->created_by === $user->id;
     }
+
+    public function archive(User $user, Task $task): bool
+    {
+        return $user->isAdmin();
+    }
 }

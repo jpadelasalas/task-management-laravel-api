@@ -31,4 +31,5 @@ Route::middleware(['auth:api', 'active'])->group(function () {
     Route::patch('tasks/{task}', [TaskController::class, 'update']);
     Route::delete('tasks/{task}', [TaskController::class, 'destroy']);
     Route::patch('tasks/{task}/status', [TaskController::class, 'updateStatus']);
+    Route::delete('tasks/{task}/archive', [TaskController::class, 'archive']);
 });
