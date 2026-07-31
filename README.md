@@ -65,9 +65,9 @@ SQLite, not the dev DB.
 
 | Service | Platform | Live URL |
 |---|---|---|
-| Laravel API | Render (Docker) | _not yet deployed_ |
-| Node services | Render (native Node) | _not yet deployed_ |
+| Laravel API | Render (Docker) | https://task-management-laravel-api-um4r.onrender.com |
+| Node services | Render (native Node) | https://task-management-node-services-nbh8.onrender.com |
 | Database | Render (free Postgres, auto-expires in 30 days) | — |
-| Frontend | _TBD_ | _not yet deployed_ |
+| Frontend | Render | https://task-management-frontend-laiw.onrender.com |
 
 See each repo's README for exact deployment steps.
