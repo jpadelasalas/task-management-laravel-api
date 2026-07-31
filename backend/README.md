@@ -70,8 +70,13 @@ restriction.
 
 ## Notes
 
-- `NODE_SERVICE_URL` in `.env` is a placeholder seam for a future,
-  separate Node.js microservice (notifications/analytics/export/cron)
-  — not implemented in this repo.
-- JWT chosen over Sanctum specifically so that seam can verify tokens
-  by signature without sharing this app's DB.
+- `NODE_SERVICE_URL` in `.env` points at the sibling
+  [task-management-node-services](https://github.com/jpadelasalas/task-management-node-services)
+  repo (notifications/analytics/export/cron — separate repo, separate
+  process). `TaskObserver` and `TaskService::updateStatus()` call
+  `NotificationService::taskAssigned()`/`taskStatusChanged()`, bound to
+  `HttpNotificationService` (posts to Node) outside the `testing`
+  environment, and to a `LogNotificationService` stub during tests and
+  whenever `NODE_SERVICE_URL` is unset — see `AppServiceProvider`.
+- JWT chosen over Sanctum specifically so that Node can verify tokens
+  by signature (shared `JWT_SECRET`) without sharing this app's DB.

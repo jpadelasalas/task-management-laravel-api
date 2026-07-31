@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'node' => [
+        'url' => env('NODE_SERVICE_URL'),
+    ],
+
 ];
