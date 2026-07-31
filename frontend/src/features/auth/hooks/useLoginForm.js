@@ -10,7 +10,7 @@ export function useLoginForm() {
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
-  async function handleSubmit(event) {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     setSubmitting(true)
 

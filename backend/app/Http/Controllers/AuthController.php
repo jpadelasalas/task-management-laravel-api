@@ -38,13 +38,13 @@ class AuthController extends Controller
 
     public function me(Request $request): UserResource
     {
-        return UserResource::make($request->user());
+        return UserResource::make($request->user()->load('teams'));
     }
 
     private function tokenResponse($user, string $token, int $status = 200): JsonResponse
     {
         return response()->json([
-            'user' => UserResource::make($user),
+            'user' => UserResource::make($user->load('teams')),
             'token' => $token,
             'token_type' => 'bearer',
         ], $status);

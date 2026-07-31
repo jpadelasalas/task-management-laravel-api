@@ -16,6 +16,11 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'role' => $this->role->value,
             'is_active' => $this->is_active,
+            'teams' => $this->whenLoaded('teams', fn () => $this->teams->map(fn ($team) => [
+                'id' => $team->id,
+                'name' => $team->name,
+                'role' => $team->pivot->role->value,
+            ])),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

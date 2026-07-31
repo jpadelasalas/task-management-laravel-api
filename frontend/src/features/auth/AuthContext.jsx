@@ -16,7 +16,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   useEffect(() => {
-    async function restoreSession() {
+    const restoreSession = async () => {
       if (!token) {
         setLoading(false)
         return
