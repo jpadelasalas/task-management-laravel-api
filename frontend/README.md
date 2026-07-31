@@ -14,14 +14,14 @@ auth only.
 npm install
 ```
 
-Create `.env` in `frontend/`:
-
-```
-VITE_API_URL=<backend-url>/api
+```bash
+cp .env.example .env
 ```
 
-(Point this at wherever the [backend](../backend/README.md) is
-running.)
+- `VITE_API_URL` — the [Laravel API](../backend/README.md)
+- `VITE_NODE_API_URL` — the
+  [Node service](https://github.com/jpadelasalas/task-management-node-services)
+  (analytics, export)
 
 ```bash
 npm run dev
@@ -50,7 +50,7 @@ src/
     teams/        team + member management
     users/        admin-only user management
     dashboard/    role-aware summary view
-    analytics/    client-derived stats stub (see note below)
+    analytics/    calls the Node service's analytics endpoints
     settings/     read-only profile view
 ```
 
@@ -60,10 +60,9 @@ only). Cross-feature reuse only goes through `shared/`.
 
 ## Notes
 
-- Analytics page shows counts derived from already-fetched task data.
-  Full analytics (date-range filtering, cross-team rollups, caching)
-  are scoped to a separate Node.js microservice — not built in this
-  repo.
+- Analytics and task export both call the Node service directly
+  (`shared/api/nodeApiClient.js`), separate from the Laravel axios
+  client — same bearer token, different base URL.
 - No Redux/global store beyond auth context — avoided for a CRUD-heavy
   app where TanStack Query already owns server-state caching.
 
@@ -72,3 +71,24 @@ only). Cross-feature reuse only goes through `shared/`.
 ```bash
 npm run build
 ```
+
+## Deployment
+
+**Live URL:** _not yet deployed_
+
+Deployed on [Render](https://render.com) as a free **Static Site**
+(no server process — just the built `dist/` folder on a CDN, so it
+never sleeps or expires like the web services do).
+
+1. Push this repo to GitHub.
+2. Render → New → Static Site → connect the repo, set:
+   - Root directory: `frontend`
+   - Build command: `npm install && npm run build`
+   - Publish directory: `dist`
+3. Environment variables:
+   - `VITE_API_URL` — the deployed Laravel API's URL + `/api`
+   - `VITE_NODE_API_URL` — the deployed Node service's URL + `/api`
+4. Deploy. No CORS setup needed on the Laravel side — it ships with
+   `allowed_origins: ['*']` by default, which is fine here since this
+   is a Bearer-token API with no cookies (no CSRF surface `*` would
+   expose).

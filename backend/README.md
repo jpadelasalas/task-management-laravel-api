@@ -92,11 +92,9 @@ recreate it (and re-run migrate/seed below) if this has gone stale.
    - `DB_CONNECTION=pgsql`, `DB_HOST`, `DB_PORT=5432`, `DB_DATABASE`,
      `DB_USERNAME`, `DB_PASSWORD` from step 2
    - `NODE_SERVICE_URL` — the deployed Node service's URL
-   - `FRONTEND_URL` — the deployed frontend's URL
-4. Deploy. The container runs `php artisan migrate --force` on every
-   boot (idempotent) but does **not** auto-seed — after the first
-   successful deploy, open Render's shell for this service once and
-   run `php artisan db:seed --force` to create the seeded test users.
+4. Deploy. The container runs `migrate --force` then `db:seed --force`
+   on every boot. Seeding only succeeds the first time (`UserSeeder`'s
+   unique email constraint makes reruns fail harmlessly)
 
 ## Notes
 
