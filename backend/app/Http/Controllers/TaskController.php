@@ -65,6 +65,15 @@ class TaskController extends Controller
         return response()->json(null, 204);
     }
 
+    public function archive(Task $task)
+    {
+        $this->authorize('archive', $task);
+
+        $this->tasks->archiveTask($task);
+
+        return response()->json(null, 204);
+    }
+
     public function updateStatus(UpdateTaskStatusRequest $request, Task $task)
     {
         $this->authorize('updateStatus', $task);

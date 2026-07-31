@@ -66,4 +66,9 @@ class TaskService
     {
         return $this->tasks->delete($task);
     }
+
+    public function archiveTask(Task $task): bool
+    {
+        return $this->tasks->delete($task);
+    }
 }

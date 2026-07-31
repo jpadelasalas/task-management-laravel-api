@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\UserRole;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -30,5 +31,26 @@ class TaskAuthorizationTest extends TestCase
         $response = $this->actingAs($creator, 'api')->deleteJson("/api/tasks/{$task->id}");
 
         $response->assertNoContent();
+    }
+
+    public function test_creator_cannot_archive_task(): void
+    {
+        $creator = User::factory()->create();
+        $task = Task::factory()->create(['created_by' => $creator->id, 'assigned_to' => $creator->id]);
+
+        $response = $this->actingAs($creator, 'api')->deleteJson("/api/tasks/{$task->id}/archive");
+
+        $response->assertForbidden();
+    }
+
+    public function test_admin_can_archive_task(): void
+    {
+        $admin = User::factory()->role(UserRole::Admin)->create();
+        $task = Task::factory()->create();
+
+        $response = $this->actingAs($admin, 'api')->deleteJson("/api/tasks/{$task->id}/archive");
+
+        $response->assertNoContent();
+        $this->assertSoftDeleted($task);
     }
 }
