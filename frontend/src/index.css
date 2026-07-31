@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+/* sync Tailwind's dark: variant to the .dark class useTheme.js toggles,
+   instead of the OS-level prefers-color-scheme media query */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* brand: indigo, single accent used across primary actions + active states */
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+
+  /* semantic status colors, used for task priority/status badges */
+  --color-success-50: #f0fdf4;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+
+  --color-warning-50: #fffbeb;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+
+  --color-danger-50: #fef2f2;
+  --color-danger-500: #ef4444;
+  --color-danger-600: #dc2626;
+  --color-danger-700: #b91c1c;
+
+  --color-info-50: #eff6ff;
+  --color-info-500: #3b82f6;
+  --color-info-600: #2563eb;
+  --color-info-700: #1d4ed8;
+
+  /* semantic surface/text tokens — light values here, overridden per color
+     scheme below. Declared in @theme so they compile to real utilities
+     (bg-surface, text-muted, border-line, …), not just plain CSS vars. */
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-inset: #f1f5f9;
+  --color-line: #e2e8f0;
+  --color-line-strong: #cbd5e1;
+  --color-foreground: #0f172a;
+  --color-muted: #64748b;
+  --color-subtle: #94a3b8;
+}
+
+:root {
+  color-scheme: light;
+}
+
+/* single source of truth for dark mode: the .dark class useTheme.js
+   toggles on <html>, resolved once from stored/system preference on
+   mount — not a parallel prefers-color-scheme media query. */
+.dark {
+  color-scheme: dark;
+
+  --color-background: #0b0d12;
+  --color-surface: #14161d;
+  --color-surface-inset: #1c2028;
+  --color-line: #262b36;
+  --color-line-strong: #363c4a;
+  --color-foreground: #e5e7eb;
+  --color-muted: #9aa2b1;
+  --color-subtle: #6b7280;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-feature-settings: 'cv11', 'ss01';
+}
