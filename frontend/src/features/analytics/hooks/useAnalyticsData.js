@@ -1,11 +1,13 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useMyTeams } from '../../teams/hooks/useMyTeams'
 import { useTeamMembers } from '../../teams/hooks/useTeamMembers'
-import { useTaskSummary } from '../../tasks/hooks/useTaskSummary'
+import * as analyticsApi from '../api'
 
 export function useAnalyticsData() {
   const { teams, loading: teamsLoading } = useMyTeams()
   const [teamId, setTeamId] = useState(null)
+  const { members } = useTeamMembers(teamId)
 
   useEffect(() => {
     if (!teamId && teams.length > 0) {
@@ -13,39 +15,41 @@ export function useAnalyticsData() {
     }
   }, [teams, teamId])
 
-  const { members } = useTeamMembers(teamId)
-  const { tasks, loading: tasksLoading } = useTaskSummary(teamId)
+  // all three come from the Node service (not Laravel) — it owns the
+  // aggregation, we just render what it hands back
+  const summaryQuery = useQuery({
+    queryKey: ['analytics', 'task-summary', teamId],
+    queryFn: () => analyticsApi.fetchTaskSummary(teamId).then((res) => res.data),
+    enabled: !!teamId,
+  })
 
-  const productivity = useMemo(
-    () =>
-      members.map((member) => {
-        const memberTasks = tasks.filter((task) => task.assigned_to === member.id)
-        const completed = memberTasks.filter((task) => task.status === 'completed').length
+  const productivityQuery = useQuery({
+    queryKey: ['analytics', 'team-productivity', teamId],
+    queryFn: () => analyticsApi.fetchTeamProductivity(teamId).then((res) => res.data.data),
+    enabled: !!teamId,
+  })
 
-        return {
-          id: member.id,
-          name: member.name,
-          total: memberTasks.length,
-          completed,
-          completionRate: memberTasks.length ? Math.round((completed / memberTasks.length) * 100) : 0,
-        }
-      }),
-    [members, tasks],
-  )
+  const deadlinesQuery = useQuery({
+    queryKey: ['analytics', 'upcoming-deadlines', teamId],
+    queryFn: () => analyticsApi.fetchUpcomingDeadlines(teamId).then((res) => res.data.data),
+    enabled: !!teamId,
+  })
 
-  const summary = useMemo(() => {
-    const completed = tasks.filter((task) => task.status === 'completed').length
-    const pending = tasks.filter((task) => task.status !== 'completed' && task.status !== 'cancelled').length
+  const memberName = (id) => members.find((member) => member.id === id)?.name ?? `User #${id}`
 
-    return { total: tasks.length, completed, pending }
-  }, [tasks])
+  const upcomingDeadlines = (deadlinesQuery.data ?? []).map((group) => ({
+    ...group,
+    memberName: memberName(group.assigned_to),
+  }))
 
   return {
     teams,
     teamId,
     setTeamId,
-    productivity,
-    summary,
-    loading: teamsLoading || tasksLoading,
+    summary: summaryQuery.data ?? null,
+    productivity: productivityQuery.data ?? [],
+    upcomingDeadlines,
+    loading: teamsLoading || summaryQuery.isLoading || productivityQuery.isLoading,
+    error: summaryQuery.error || productivityQuery.error,
   }
 }

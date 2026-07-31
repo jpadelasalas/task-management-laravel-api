@@ -1,12 +1,15 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../auth/hooks/useAuth'
 import { useDashboardData } from '../hooks/useDashboardData'
 import { StatTile } from '../../../shared/components/StatTile'
 import { StatusBadge, PriorityBadge } from '../../tasks/components/StatusBadge'
+import { ExportModal } from '../../tasks/components/ExportModal'
 
 export default function Dashboard() {
   const { user } = useAuth()
   const { teams, teamId, setTeamId, summary, loading } = useDashboardData()
+  const [exporting, setExporting] = useState(false)
 
   return (
     <div>
@@ -16,20 +19,34 @@ export default function Dashboard() {
           <p className="mt-1 text-sm text-muted">Role: {user.role}</p>
         </div>
 
-        {teams.length > 1 && (
-          <select
-            value={teamId ?? ''}
-            onChange={(event) => setTeamId(Number(event.target.value))}
-            className="rounded-lg border border-line bg-surface px-3 py-1.5 text-sm text-foreground focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-          >
-            {teams.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.name}
-              </option>
-            ))}
-          </select>
-        )}
+        <div className="flex items-center gap-2">
+          {teams.length > 1 && (
+            <select
+              value={teamId ?? ''}
+              onChange={(event) => setTeamId(Number(event.target.value))}
+              className="rounded-lg border border-line bg-surface px-3 py-1.5 text-sm text-foreground focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+            >
+              {teams.map((team) => (
+                <option key={team.id} value={team.id}>
+                  {team.name}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {teamId && (
+            <button
+              type="button"
+              onClick={() => setExporting(true)}
+              className="rounded-lg border border-line bg-surface px-3 py-1.5 text-sm font-medium text-foreground hover:border-line-strong"
+            >
+              Export Tasks
+            </button>
+          )}
+        </div>
       </div>
+
+      {exporting && <ExportModal teamId={teamId} onClose={() => setExporting(false)} />}
 
       {teams.length === 0 ? (
         <p className="text-sm text-muted">You're not part of any team yet.</p>

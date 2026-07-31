@@ -1,12 +1,15 @@
 # Task Management & Analytics Platform
 
-Laravel 11 API + React (Vite/Tailwind) SPA. Built as a CF Outsourcing
-skills-test submission.
+Laravel 11 API + Node.js/Express microservice + React (Vite/Tailwind)
+SPA. Built as a CF Outsourcing skills-test submission.
 
 - [`backend/`](backend/README.md) — Laravel API, JWT auth, layered
   Request → Controller → Service → Repository architecture
+- [task-management-node-services](https://github.com/jpadelasalas/task-management-node-services) —
+  separate repo, notifications/analytics/export/cron. No DB of its
+  own; talks to the Laravel API over HTTP.
 - [`frontend/`](frontend/README.md) — React SPA, feature-based
-  folders, TanStack Query + axios
+  folders, TanStack Query + axios, consumes both APIs
 
 ## Quick start
 
@@ -21,14 +24,23 @@ skills-test submission.
    php artisan migrate --seed
    php artisan serve --port=8000
    ```
-2. Frontend (see [frontend/README.md](frontend/README.md)):
+2. Node service (clone
+   [task-management-node-services](https://github.com/jpadelasalas/task-management-node-services)
+   as a sibling folder — see its README):
+   ```bash
+   npm install
+   cp .env.example .env
+   # JWT_SECRET must match the backend's exactly
+   npm start
+   ```
+3. Frontend (see [frontend/README.md](frontend/README.md)):
    ```bash
    cd frontend
    npm install
-   echo VITE_API_URL=<backend-url>/api > .env
+   cp .env.example .env
    npm run dev
    ```
-3. Open the frontend dev server URL Vite prints, log in with a seeded account.
+4. Open the frontend dev server URL Vite prints, log in with a seeded account.
 
 ## Test credentials
 
@@ -38,27 +50,24 @@ skills-test submission.
 | manager@test.com | password123 | manager |
 | member@test.com | password123 | team_member |
 
-## Scope note
-
-The original spec describes a third service — a Node.js microservice
-for notifications/analytics/export/cron. That's intentionally out of
-scope for this repo (separate repo, built on request later). Where
-the Laravel API would call it (task-assignment/status-change
-notifications), a swappable `NotificationService` interface exists in
-`backend/app/Services/Notifications/` with a `Log`-based
-implementation standing in for now.
-
 ## Tests
 
 ```bash
 cd backend && php artisan test
 ```
 
-5 Feature test suites (11 tests) covering auth, task status
-transitions, task delete authorization, team-scoped task access, and
-role-restricted user creation — run against in-memory SQLite, not the
-dev DB.
+5 Feature test suites (13 tests) covering auth, task status
+transitions, task delete/archive authorization, team-scoped task
+access, and role-restricted user creation — run against in-memory
+SQLite, not the dev DB.
 
 ## Deployment
 
-Not deployed yet.
+| Service | Platform | Live URL |
+|---|---|---|
+| Laravel API | Render (Docker) | _not yet deployed_ |
+| Node services | Render (native Node) | _not yet deployed_ |
+| Database | Render (free Postgres, auto-expires in 30 days) | — |
+| Frontend | _TBD_ | _not yet deployed_ |
+
+See each repo's README for exact deployment steps.

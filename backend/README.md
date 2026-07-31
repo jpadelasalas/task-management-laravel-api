@@ -64,9 +64,39 @@ php artisan test
 ```
 
 Runs against in-memory SQLite (`phpunit.xml`), not your dev MySQL DB.
-5 Feature test suites, 11 tests: login, task status transitions, task
-delete authorization, team-scoped task access, user-creation role
-restriction.
+5 Feature test suites, 13 tests: login, task status transitions, task
+delete/archive authorization, team-scoped task access, user-creation
+role restriction.
+
+## Deployment
+
+**Live URL:** _not yet deployed_
+
+Deployed entirely on [Render](https://render.com): the API as a
+Docker web service (free tier), the DB as Render's free managed
+Postgres.
+
+**Note:** Render's free Postgres auto-deletes after 30 days —
+recreate it (and re-run migrate/seed below) if this has gone stale.
+
+1. Push this repo to GitHub.
+2. Render → New → PostgreSQL → free tier. Copy its internal connection
+   details (host, port, database, username, password) from the
+   dashboard once it's provisioned.
+3. Render → New → Web Service → connect the repo → it detects
+   `Dockerfile` automatically. Set environment variables:
+   - `APP_KEY` — generate locally with `php artisan key:generate --show`
+   - `APP_ENV=production`, `APP_DEBUG=false`
+   - `JWT_SECRET` — generate locally with `php artisan jwt:secret --show`
+     (must match the Node service's `JWT_SECRET` exactly)
+   - `DB_CONNECTION=pgsql`, `DB_HOST`, `DB_PORT=5432`, `DB_DATABASE`,
+     `DB_USERNAME`, `DB_PASSWORD` from step 2
+   - `NODE_SERVICE_URL` — the deployed Node service's URL
+   - `FRONTEND_URL` — the deployed frontend's URL
+4. Deploy. The container runs `php artisan migrate --force` on every
+   boot (idempotent) but does **not** auto-seed — after the first
+   successful deploy, open Render's shell for this service once and
+   run `php artisan db:seed --force` to create the seeded test users.
 
 ## Notes
 
