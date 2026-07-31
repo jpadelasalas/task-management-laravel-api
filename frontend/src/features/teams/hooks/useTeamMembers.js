@@ -1,15 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
-import * as teamsApi from '../api'
+import { useTeam } from './useTeam'
 
 export function useTeamMembers(teamId) {
-  const { data, isLoading } = useQuery({
-    queryKey: ['teams', teamId, 'members'],
-    queryFn: async () => {
-      const { data } = await teamsApi.fetchTeam(teamId)
-      return data.data.members
-    },
-    enabled: !!teamId,
-  })
+  const { team, loading } = useTeam(teamId)
 
-  return { members: data ?? [], loading: isLoading }
+  return { members: team?.members ?? [], loading }
 }
